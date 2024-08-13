@@ -1,6 +1,6 @@
 data/reviews.json:
 	poetry run \
-	python -m appstore.get_reviews \
+	python3 -m appstore.get_reviews \
 	-k 9HSHRGCVJK \
 	-a 514561561 \
 	-o $@

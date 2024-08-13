@@ -9,6 +9,18 @@ from dotenv import load_dotenv, find_dotenv
 
 
 def sign_authlib(private_key_path, key_id, valid_for):
+    """Generates the authentication key required for the App Store
+    Connect API.
+    :param private_key_path: Path to the P8 private key from the App
+        Store.
+    :type private_key_path: str
+    :param key_id: Key ID from the P8 file. By default this will be in
+        the filename itself.
+    :type key_id: str
+    :return: The signed key to authenticate.
+    :rtype: str
+
+    """
     current_time = int(datetime.datetime.now().timestamp())
     header = {"alg": "ES256", "kid": key_id, "typ": "JWT"}
 
@@ -26,6 +38,12 @@ def sign_authlib(private_key_path, key_id, valid_for):
 
 
 def parse_review_dict(d):
+    """Get the useful info from the review data.
+    :param d: The dictionary from the JSON response.
+    :type d: dict
+    :return: Dictionary with keys `"id"`, `"rating"`, `"review"`, `"date"`.
+    :rtype: dict
+    """
     out = {
         "id": d["id"],
         "rating": d["attributes"]["rating"],
@@ -46,6 +64,21 @@ def parse_review_dict(d):
     help="Output file",
 )
 def get_reviews(key_id, app_id, output_path):
+    """Get all of the reviews available.
+    :param key_id: Key ID from the P8 file. By default this will be in
+        the filename itself.
+    :type key_id: str
+    :param app_id: The id number for the app in the App Store.
+    :type app_id: str
+    :param output_path: Where to write the reviews, in json format.
+    :type output_path: str
+    :return: A list of dicts, each of which is the output of
+        `parse_review_dict`.
+    :rtype: list
+    """
+    _, output_ext = os.path.splitext(output_path)
+    if not output_ext == ".json":
+        raise ValueError("`output_path` must end with '.json'")
     private_key_path = os.environ["P8_KEY_PATH"]
     limit = 200
     next_url = "".join(
@@ -82,7 +115,7 @@ def get_reviews(key_id, app_id, output_path):
     with open(output_path, "w") as f:
         json.dump(out, f, indent=2)
     print(f"Written {n_reviews} reviews to {output_path}")
-    return n_reviews
+    return out
 
 
 if __name__ == "__main__":
