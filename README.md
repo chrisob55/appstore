@@ -2,7 +2,7 @@
 
 This project will download App Store Reviews.
 
-For this to work you must set env var `P8_KEY_PATH` in a file called `.env` at the top level of this directory. Both the P8 file and the `.env` file must **NEVER** be committed to version control.
+For this to work you must set env vars `P8_KEY_PATH`, `KEY_ID`, and `APP_ID` in a file called `.env` at the top level of this directory. Both the P8 file and the `.env` file must **NEVER** be committed to version control.
 
 When you check out the repo you will need to initialise the virtualenv. There are two ways to do this: using [poetry](https://python-poetry.org/) or using `requirements.txt`.
 
