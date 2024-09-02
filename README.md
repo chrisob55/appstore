@@ -46,13 +46,12 @@ If you'd prefer not to use the Makefile you can run:
 
 ```bash
 # Using a poetry environment
+# First get the app versions
+poetry run python3 -m appstore.get_versions -o path/to/versions.json
+# Then download the reviews for each app version
 poetry run python3 -m appstore.get_reviews \
-    -k 1ABCDEFGHJ \
-    -a 123456789 \
-    -o path/to/reviews.json
-# If you have your own virtual environment activated
-python3 -m appstore.get_reviews \
-    -k 1ABCDEFGHJ \
-    -a 123456789 \
+    -i path/to/versions.json \
     -o path/to/reviews.json
 ```
+
+If you're using a non_poetry environment just remove the `poetry run` from the beginning of each command.
