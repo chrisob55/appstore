@@ -36,7 +36,13 @@ pre-commit install
 
 ## Downloading the reviews
 
-The command is specified in the Makefile to write the reviews out at `data/reviews.json`. If you'd prefer not to use the Makefile you can run
+The `all` command is specified in the Makefile to write the reviews out at `data/reviews.json`. 
+
+```bash
+make all
+```
+
+If you'd prefer not to use the Makefile you can run:
 
 ```bash
 # Using a poetry environment
