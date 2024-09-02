@@ -1,6 +1,6 @@
 .PHONY: all data requirements help
 
-all: data requirements
+all: requirements data
 
 ## Make the datasets
 data: data/versions.json data/reviews.json
@@ -15,7 +15,7 @@ data/reviews.json: data/versions.json
 requirements: poetry.lock requirements.txt
 
 poetry.lock:
-	poetry lock
+	poetry lock --no-update
 
 requirements.txt: poetry.lock pyproject.toml
 	poetry export -f requirements.txt --output requirements.txt
