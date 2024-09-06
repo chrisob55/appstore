@@ -14,7 +14,6 @@ from appstore.auth import sign_authlib
     "-o",
     "--output-path",
     required=True,
-    default="reviews.json",
     help="Output file",
 )
 def get_versions(output_path):
