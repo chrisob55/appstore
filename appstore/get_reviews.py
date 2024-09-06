@@ -21,7 +21,7 @@ def parse_review_dict(d):
         "review_id": d["id"],
         "rating": d["attributes"]["rating"],
         "review": d["attributes"]["body"],
-        "date": d["attributes"]["createdDate"][:10],
+        "date": d["attributes"]["createdDate"],
     }
     return out
 
