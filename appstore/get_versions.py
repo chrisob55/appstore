@@ -9,22 +9,6 @@ from dotenv import find_dotenv, load_dotenv
 from appstore.auth import sign_authlib
 
 
-def parse_review_dict(d):
-    """Get the useful info from the review data.
-    :param d: The dictionary from the JSON response.
-    :type d: dict
-    :return: Dictionary with keys `"id"`, `"rating"`, `"review"`, `"date"`.
-    :rtype: dict
-    """
-    out = {
-        "id": d["id"],
-        "rating": d["attributes"]["rating"],
-        "review": d["attributes"]["body"],
-        "date": d["attributes"]["createdDate"][:10],
-    }
-    return out
-
-
 @click.command()
 @click.option(
     "-o",
@@ -50,7 +34,7 @@ def get_versions(output_path):
     app_id = os.environ["APP_ID"]
     logger.info(f"Getting version ids for App: {app_id}")
 
-    url = "".join(
+    next_url = "".join(
         [
             "https://api.appstoreconnect.apple.com/v1/apps/",
             app_id,
@@ -59,16 +43,34 @@ def get_versions(output_path):
     )
     signed_key = sign_authlib(private_key_path, key_id, 1200)
 
-    r = requests.get(
-        url,
+    first_response = requests.get(
+        next_url,
         headers={"Authorization": f"Bearer {signed_key}"},
     ).json()
+    n_versions = first_response["meta"]["paging"]["total"]
+    limit = first_response["meta"]["paging"]["limit"]
+    n_pages = (n_versions // limit) + 1
 
-    out = {
-        x["id"]: x["attributes"]["versionString"]
-        for x in r["data"]
-        if x["type"] == "appStoreVersions"
-    }
+    out = {}
+    has_more = True
+    for i in range(n_pages):
+        r = requests.get(
+            next_url,
+            headers={"Authorization": f"Bearer {signed_key}"},
+        ).json()
+        out.update(
+            {
+                x["id"]: x["attributes"]["versionString"]
+                for x in r["data"]
+                if x["type"] == "appStoreVersions"
+            }
+        )
+        next_url = r["links"].get("next", "")
+        has_more = "next" in r["links"]
+    if has_more:
+        raise ValueError(
+            "More versions to collect, n_pages calculated incorrectly."
+        )
     with open(output_path, "w") as f:
         json.dump(out, f, indent=2)
     logger.info(f"Written {len(out)} versions to {output_path}")
